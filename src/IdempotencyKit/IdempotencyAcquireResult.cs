@@ -4,7 +4,7 @@ using System.Text;
 
 namespace IdempotencyKit;
 
-public sealed record IdempotencyAcquireResult(IdempotencyAcquireStatus Status, string? FingerPrint = null, StoredResponse? Response = null)
+public sealed record IdempotencyAcquireResult(IdempotencyAcquireStatus Status, string? Fingerprint = null, StoredResponse? Response = null)
 {
     public static IdempotencyAcquireResult Acquired { get; } = new(IdempotencyAcquireStatus.Acquired);
     public static IdempotencyAcquireResult InProgress { get; } = new(IdempotencyAcquireStatus.InProgress);
