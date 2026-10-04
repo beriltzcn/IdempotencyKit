@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/IdempotencyKit.SampleApi/IdempotencyKit.SampleApi.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/IdempotencyKit/IdempotencyKit.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IdempotencyKit.Tests/IdempotencyKit.Tests.csproj" />
+  </Folder>
+</Solution>
