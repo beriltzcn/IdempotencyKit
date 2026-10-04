@@ -39,13 +39,10 @@ public class InMemoryIdempotencyStoreTests
 
         var response = new StoredResponse(201, "application/json", new byte[] { 1, 2, 3 });
 
-        // İş bitti: cevabı sakla ve 24 saat geçerli yap.
         await store.CompleteAsync("key-1", response, Now.AddHours(24));
 
-        // Beş saniye sonra aynı anahtarla tekrar gelen istek.
         var replay = await store.TryAcquireAsync("key-1", "fingerprint-1", Now.AddSeconds(5));
 
-        // İş tekrar yapılmayacak; saklanan cevap aynen dönecek.
         Assert.Equal(IdempotencyAcquireStatus.Completed, replay.Status);
         Assert.Equal(201, replay.Response!.StatusCode);
         Assert.Equal("application/json", replay.Response.ContentType);
@@ -81,12 +78,8 @@ public class InMemoryIdempotencyStoreTests
     {
         var store = CreateStore();
 
-        // Anahtar alındı ama iş hiç bitmedi (CompleteAsync çağrılmadı).
-        // Bu, sunucunun çöktüğü senaryo.
         await store.TryAcquireAsync("key-1", "fingerprint-1", Now);
 
-        // ProcessingTimeout varsayılanı 1 dakika. İki dakika sonra anahtar
-        // "terk edilmiş" sayılıp yeniden kullanılabilir hale gelmeli.
         var later = await store.TryAcquireAsync("key-1", "fingerprint-1", Now.AddMinutes(2));
 
         Assert.Equal(IdempotencyAcquireStatus.Acquired, later.Status);
@@ -101,11 +94,9 @@ public class InMemoryIdempotencyStoreTests
         var response = new StoredResponse(200, "application/json", new byte[] { 1 });
         await store.CompleteAsync("key-1", response, Now.AddHours(24));
 
-        // Saklama süresi dolmadan: eski cevap aynen verilmeli.
         var stillValid = await store.TryAcquireAsync("key-1", "fingerprint-1", Now.AddHours(1));
         Assert.Equal(IdempotencyAcquireStatus.Completed, stillValid.Status);
 
-        // Saklama süresi dolduktan sonra: anahtar yeni sayılmalı.
         var afterExpiry = await store.TryAcquireAsync("key-1", "fingerprint-1", Now.AddHours(25));
         Assert.Equal(IdempotencyAcquireStatus.Acquired, afterExpiry.Status);
     }
@@ -116,10 +107,8 @@ public class InMemoryIdempotencyStoreTests
         var store = CreateStore();
         await store.TryAcquireAsync("key-1", "fingerprint-1", Now);
 
-        // İş başarısız oldu, anahtarı serbest bırakıyoruz.
         await store.ReleaseAsync("key-1");
 
-        // İstemci aynı anahtarla tekrar deniyor ve bu kez anahtarı alabilmeli.
         var retry = await store.TryAcquireAsync("key-1", "fingerprint-1", Now.AddSeconds(1));
 
         Assert.Equal(IdempotencyAcquireStatus.Acquired, retry.Status);

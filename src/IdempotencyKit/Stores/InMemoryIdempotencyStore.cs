@@ -55,7 +55,6 @@ public sealed class InMemoryIdempotencyStore : IIdempotencyStore
         
     }
 
-
     public Task CompleteAsync(
         string key,
         StoredResponse response,
@@ -79,7 +78,6 @@ public sealed class InMemoryIdempotencyStore : IIdempotencyStore
             }
         }
     }
-
 
     public Task ReleaseAsync(string key, CancellationToken cancellationToken = default)
     {
