@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore IdempotencyKit.slnx
+
+      - name: Build
+        run: dotnet build IdempotencyKit.slnx --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test IdempotencyKit.slnx --no-build --configuration Release --verbosity normal

@@ -1,5 +1,7 @@
 # IdempotencyKit
 
+[![CI](https://github.com/beriltzcn/IdempotencyKit/actions/workflows/ci.yml/badge.svg)](https://github.com/beriltzcn/IdempotencyKit/actions/workflows/ci.yml)
+
 Idempotency middleware for ASP.NET Core. It stops the same request from being processed twice, and replays the original response when a duplicate arrives.
 
 ## The problem
